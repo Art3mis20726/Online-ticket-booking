@@ -29,7 +29,6 @@ const numberOfSlotsAvailable = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, remainingSlots, "Number of slots extracted successfully"));
 });
-    
 const refreshSlots = asyncHandler(async (req, res) => {
     const museums = await Museum.find();
 
@@ -93,7 +92,15 @@ const ticketGeneration = asyncHandler(async (req, res) => {
         paymentId,
     });
 
+    if(!newBooking){
+        throw new ApiError(400,"Error in booking the ticket")
+    }
+    user.visitedMuseum.push(museum._id)
+    user.bookingId.push(newBooking._id)
+    museum.bookings.push(newBooking._id)
     await museum.save();
+    await user.save()
+
 
     return res.status(200).json(new ApiResponse(200, newBooking, "Booking of the ticket is successful"));
 });

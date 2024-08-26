@@ -32,18 +32,8 @@ const museumSchema = new mongoose.Schema({
         }
     ],
     bookings: [{
-        date: {
-            type: Date,
-            required: true
-        },
-        forenoonVisitors: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-        afternoonVisitors: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Booking"
     }]
 });
 
