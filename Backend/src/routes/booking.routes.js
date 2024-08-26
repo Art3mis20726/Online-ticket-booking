@@ -3,6 +3,7 @@ import { numberOfSlotsAvailable, refreshSlots, ticketGeneration } from '../contr
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 const router=Router()
 import cron from "node-cron";
+import { paymentMiddleware } from '../middlewares/payment.middlewares.js';
 
 cron.schedule("0 0 * * *", async () => {
     try {
@@ -17,6 +18,6 @@ cron.schedule("0 0 * * *", async () => {
 
 
 router.route("/numberOfSlotsAvailable/:museumId").get(numberOfSlotsAvailable)
-router.route("/ticketGeneration/:museumId").post(verifyJWT,ticketGeneration)
+router.route("/ticketGeneration/:museumId").post(verifyJWT,paymentMiddleware,ticketGeneration)
 router.route("/refreshSlots").get(refreshSlots)
 export default router

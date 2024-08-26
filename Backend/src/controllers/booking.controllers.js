@@ -46,6 +46,9 @@ const refreshSlots = asyncHandler(async (req, res) => {
 const ticketGeneration = asyncHandler(async (req, res) => {
     const { museumId } = req.params;
     const { visitors, slot, tickets, totalPrice, paymentId, bookingDayIndex } = req.body;
+    const orderId=req.order?.id
+    console.log(req.order);
+    
 
     if (!visitors) {
         throw new ApiError(400, "Visitors is required");
@@ -88,8 +91,8 @@ const ticketGeneration = asyncHandler(async (req, res) => {
         visitors,
         slot,
         tickets,
-        totalPrice,
-        paymentId,
+        totalPrice:req.order?.amount,
+        paymentId:orderId,
     });
 
     if(!newBooking){
