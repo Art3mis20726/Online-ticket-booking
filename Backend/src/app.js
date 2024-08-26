@@ -16,4 +16,8 @@ app.use(express.urlencoded({
 app.use(express.static("public"))
 
 app.use(cookieParser())
+import userRoutes from "./user.routes.js"
+import museumRoutes from"./museum.routes.js"
+app.use("/api/v1/user",userRoutes)
+app.use("/api/v1/museum",museumRoutes)
 export default app
