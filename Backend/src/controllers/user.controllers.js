@@ -41,7 +41,7 @@ const user=await User.create({
 if(!user){
     throw new ApiError(400,"Failed to create user")
 }
-const newlycreatedUser=await User.findById(user._id).select("- password accessToken")
+const newlycreatedUser=await User.findById(user._id).select("-password -accessToken")
 if(!newlycreatedUser){
     throw new ApiError(400,"Failed to get user")
 }

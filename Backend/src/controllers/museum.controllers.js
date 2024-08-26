@@ -19,13 +19,13 @@ const existMuseum=await Museum.findOne({name});
 if(existMuseum){
     throw new ApiError(400,"Museum name already exists")
 }
-const newMuseum=new Museum({name,location,slots});  
+const newMuseum=await Museum.create({name,location,slots});  
 if(!newMuseum){
     throw new ApiError(400,"Error in storing the museum information")
 }
 const newlycreatedMuseum=await Museum.findById(newMuseum._id).select("-bookings")
 if(!newlycreatedMuseum){
-    throw new ApiError(400,"Error in finding the new meseum")
+    throw new ApiError(400,"Error in finding the newly created meseum")
 }
 return res.status(200).json(new ApiResponse(200,newlycreatedMuseum,"Museum created successfully"))
 
