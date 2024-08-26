@@ -46,6 +46,10 @@ const userSchema= new mongoose.Schema({
     visitedMuseum:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Museum"
+    }],
+    bookingId:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Booking"
     }]
 },{timestamps:true})
 userSchema.pre("save",async function(next){

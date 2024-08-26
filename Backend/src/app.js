@@ -17,6 +17,8 @@ app.use(express.static("public"))
 app.use(cookieParser())
 import userRoutes from "./routes/user.routes.js"
 import museumRoutes from"./routes/museum.routes.js"
+import bookingRoutes from './routes/booking.routes.js';
 app.use("/api/v1/user",userRoutes)
 app.use("/api/v1/museum",museumRoutes)
+app.use("/api/v1/booking",bookingRoutes)
 export default app

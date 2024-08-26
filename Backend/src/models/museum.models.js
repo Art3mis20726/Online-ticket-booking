@@ -3,39 +3,48 @@ const museumSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim:true
+        trim: true
     },
     location: {
         type: String,
         required: true
     },
-    slots: {
+    initialSlots: {
         forenoon: {
             type: Number,
-            required: true,
-            default: 20
+            required: true
         },
         afternoon: {
             type: Number,
-            required: true,
-            default: 20
+            required: true
         }
     },
-    bookings: [{date: {
-        type: Date,
-        required: true
-    },
-    forenoonVisitors: 
+    weeklySlots: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User" 
+            forenoon: {
+                type: Number,
+                required: true,
+            },
+            afternoon: {
+                type: Number,
+                required: true,
+            }
         }
-    ,
-    afternoonVisitors: 
-        {
+    ],
+    bookings: [{
+        date: {
+            type: Date,
+            required: true
+        },
+        forenoonVisitors: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User" 
-        }}] // Array of daily bookings
+            ref: "User"
+        },
+        afternoonVisitors: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
+    }]
 });
 
 export const Museum = mongoose.model("Museum", museumSchema);

@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema({
-    museum: {
+    museumId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Museum",
         required: true
     },
-    leader: {
+    leaderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
@@ -35,10 +35,10 @@ const bookingSchema = new mongoose.Schema({
             }
         }
     ],
-    slots: 
+    slot: 
         {
                 type: String,
-                enum: ["Forenoon", "Afternoon"],
+                enum: ["forenoon", "afternoon"],
                 required: true
         }
     ,
@@ -54,13 +54,7 @@ const bookingSchema = new mongoose.Schema({
     paymentId: {
         type: String,
         required: true
-    },
-    paymentStatus: {
-        type: String,
-        enum: ["Pending", "Completed", "Failed"],
-        default: "Pending"
-    }
-}, {
+    },}, {
     timestamps: true
 });
 
