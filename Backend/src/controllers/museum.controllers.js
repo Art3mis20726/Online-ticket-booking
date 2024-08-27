@@ -46,7 +46,7 @@ const registerMuseum = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, newlyCreatedMuseum, "Museum created successfully"));
 });
 const isMuseumAvailable=asyncHandler(async(req,res)=>{
-    const {museumName}= req.body
+    const {museumName}= req.params
     if(!museumName){
         throw new ApiError(400,"Museum is required")
     }
