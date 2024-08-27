@@ -52,7 +52,6 @@ const isMuseumAvailable=asyncHandler(async(req,res)=>{
     }
     
     const museum=await Museum.findOne({name:museumName})
-    console.log(museum);
     
     if(!museum){
         return res.status(200).json(new ApiResponse(200,false,"Museum is not available"))
