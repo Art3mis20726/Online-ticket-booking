@@ -45,6 +45,17 @@ const registerMuseum = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, newlyCreatedMuseum, "Museum created successfully"));
 });
+const isMuseumAvailable=asyncHandler(async(req,res)=>{
+    const museumName= req.body
+    if(!museumName){
+        throw new ApiError(400,"Museum is required")
+    }
+    const museum=await Museum.findOne({name:museumName})
+    if(!museum){
+        return res.status(200).json(new ApiResponse(200,false,"Museum is not available"))
+    }
+    return res.status(200).json(new ApiResponse(200,museum._id,"Museum is available"))
+})
 
-export { registerMuseum };
+export { registerMuseum ,isMuseumAvailable};
 

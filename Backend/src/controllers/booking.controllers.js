@@ -107,6 +107,34 @@ const ticketGeneration = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, newBooking, "Booking of the ticket is successful"));
 });
+const isTicketAvailable=asyncHandler(async(req,res)=>{
+    const {museumId,bookingDayIndex,slot,tickets}=req.query;
+    if(!museumId){
+        throw new ApiError(400,"Museum is not provided")
+    }
+    if(!bookingDayIndex){
+        throw new ApiError(400,"Booking day is not provided")
+    }
+    if(!slot){
+        throw new ApiError(400,"Slot is not provided")}
+    if(!tickets){
+        throw new ApiError(400,"Tickets are not provided")
+    }
+    if(!(bookingDayIndex>0||bookingDayIndex<6)){
+        throw new ApiError(400,"Invalid booking day")
+    }
+    const museum=await Museum.findById(museumId)
+    if(!museum){
+        throw new ApiError(400,"Museum is not valid")
+    }
+    const availableSlots = museum.weeklySlots[bookingDayIndex][slot];
+    if (availableSlots < tickets) {
+        return res.status(200).json(new ApiResponse(200,false,'Ticket is not available'))}
+    else{
+        return res.status(200).json(new ApiResponse(200,true,'Ticket is available'))
+    }
+
+})
     export{
-        numberOfSlotsAvailable,ticketGeneration,refreshSlots
+        numberOfSlotsAvailable,ticketGeneration,refreshSlots,isTicketAvailable
     }
