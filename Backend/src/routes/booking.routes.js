@@ -1,5 +1,5 @@
 import Router from 'express';
-import { isTicketAvailable, numberOfSlotsAvailable, refreshSlots, ticketGeneration } from '../controllers/booking.controllers.js';
+import { cancelTicket, isTicketAvailable, numberOfSlotsAvailable, refreshSlots, ticketGeneration } from '../controllers/booking.controllers.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 const router=Router()
 import cron from "node-cron";
@@ -21,4 +21,5 @@ router.route("/numberOfSlotsAvailable/:museumId").get(numberOfSlotsAvailable)
 router.route("/ticketGeneration/:museumId").post(verifyJWT,paymentMiddleware,ticketGeneration)
 router.route("/refreshSlots").get(refreshSlots)
 router.route("/isTicketAvailable").get(isTicketAvailable);
+router.route("/cancelTicket/:bookingId").get(verifyJWT,cancelTicket)
 export default router

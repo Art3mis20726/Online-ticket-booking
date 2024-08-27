@@ -46,9 +46,7 @@ const refreshSlots = asyncHandler(async (req, res) => {
 const ticketGeneration = asyncHandler(async (req, res) => {
     const { museumId } = req.params;
     const { visitors, slot, tickets, totalPrice, paymentId, bookingDayIndex } = req.body;
-    const orderId=req.order?.id
-    console.log(req.order);
-    
+    const orderId=req.order?.id    
 
     if (!visitors) {
         throw new ApiError(400, "Visitors is required");
@@ -84,6 +82,8 @@ const ticketGeneration = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Not enough slots available for the selected time slot");
     }
     museum.weeklySlots[bookingDayIndex][slot] -= tickets;
+    const bookingDate = new Date();
+    bookingDate.setDate(bookingDate.getDate() + bookingDayIndex);
 
     const newBooking = await Booking.create({
         museumId,
@@ -93,12 +93,15 @@ const ticketGeneration = asyncHandler(async (req, res) => {
         tickets,
         totalPrice:req.order?.amount,
         paymentId:orderId,
+        bookingDate,
     });
 
     if(!newBooking){
         throw new ApiError(400,"Error in booking the ticket")
     }
-    user.visitedMuseum.push(museum._id)
+    if(!user.visitedMuseum.includes(museumId)){
+        user.visitedMuseum.push(museumId)
+    }
     user.bookingId.push(newBooking._id)
     museum.bookings.push(newBooking._id)
     await museum.save();
@@ -135,6 +138,52 @@ const isTicketAvailable=asyncHandler(async(req,res)=>{
     }
 
 })
+const cancelTicket = asyncHandler(async (req, res) => {
+    const{bookingId}=req.params
+    if (!bookingId) {
+        throw new ApiError(400, "Booking id is not provided");
+    }
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+        throw new ApiError(400, "Booking is not valid");
+    }
+
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+        throw new ApiError(400, "User is not valid");
+    }
+
+    const museum = await Museum.findById(booking.museumId);
+    if (!museum) {
+        throw new ApiError(400, "Museum is not valid");
+    }
+    const createdAt = booking.bookingDate;
+    const currentDate = new Date();
+    const timeDiff = Math.abs(currentDate - createdAt);
+    const bookingDayIndex = Math.floor(timeDiff / (1000 * 3600 * 24))+1; // Convert to days    
+    if (bookingDayIndex < 0 || bookingDayIndex >= museum.weeklySlots.length) {
+        throw new ApiError(400, "Invalid booking day index calculated");
+    }
+    museum.weeklySlots[bookingDayIndex][booking.slot] += booking.tickets;
+
+    museum.bookings = museum.bookings.filter(id => !id.equals(bookingId));
+
+    user.visitedMuseum = user.visitedMuseum.filter(id => !id.equals(museum._id));
+
+    user.bookingId = user.bookingId.filter(id => !id.equals(bookingId));
+    //or there is also on which i can use
+    //  user.bookingId.pull(booking._id);
+    //user.visitedMuseum.pull(museum._id);
+    //museum.bookings.pull(booking._id);
+
+    await museum.save();
+    await user.save();
+    await booking.deleteOne();
+
+    return res.status(200).json(new ApiResponse(200, null, "Booking canceled successfully"));
+});
+
     export{
-        numberOfSlotsAvailable,ticketGeneration,refreshSlots,isTicketAvailable
+        numberOfSlotsAvailable,ticketGeneration,refreshSlots,isTicketAvailable,cancelTicket
     }
