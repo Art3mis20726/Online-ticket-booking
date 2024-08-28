@@ -1,3 +1,5 @@
+import { Booking } from "../models/booking.models.js";
+import { Museum } from "../models/museum.models.js";
 import { User } from "../models/user.models.js";
 import ApiError from "../utils/apiError.utils.js";
 import { ApiResponse } from "../utils/apiResponse.utils.js";
@@ -113,7 +115,47 @@ const logoutUser=asyncHandler(async(req,res)=>{
         .clearCookie("accessToken", Options)
         .clearCookie("refreshAccessToken", Options)
         .json(new ApiResponse(200, "User logged out successfully!!"));
-    });
+});
+const museumVisited=asyncHandler(async(req,res)=>{
+    const user=await User.findById(req.user?._id)
+    if(!user){
+        throw new ApiError(400,"The user is not registered")
+    }
+    const museumIds=user.visitedMuseum;
+    const museumVisitedData=[]
+    for(const museumId of museumIds){
+        const museum=await Museum.findById(museumId).select("name location")
+        if(!museum){
+            throw new ApiError(400,"Museum Id not found!!!")
+        }
+        museumVisitedData.push(museum)
+    }
+    return res.status(200).json(new ApiResponse(200,museumVisitedData,"Visited museum data extracted successfully"))
+})
+const bookingDetails=asyncHandler(async(req,res)=>{
+    const user=await User.findById(req.user?._id)
+    if(!user){
+        throw new ApiError(400,"User not found")
+    }
+    const bookingIds=user.bookingId;
+    const bookingDetails=[];
+    for(const bookingId of bookingIds){
+        const bookingDetail=await Booking.findById(bookingId).select("-leaderId")
+        if(!bookingDetail){
+            throw new ApiError(400,"Booking Id not found")
+        }
+        const museumDetail=await Museum.findById(bookingDetail.museumId).select("name location -_id")
+        if(!museumDetail){
+            throw new ApiError(400,"Museum Id not found")
+        }
+        const bookingDetailObject=bookingDetail.toObject()
+        delete bookingDetailObject.museumId;
+        bookingDetailObject.museumDetail=museumDetail   
+        bookingDetails.push(bookingDetailObject)
+    }
+    return res.status(200).json(new ApiResponse(200,bookingDetails,"BookingDetails fetched successfully"))
+
+})
 export{
-    registerUser,loginUser,logoutUser
+    registerUser,loginUser,logoutUser,museumVisited,bookingDetails
 }
