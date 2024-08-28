@@ -35,13 +35,11 @@ const bookingSchema = new mongoose.Schema({
             }
         }
     ],
-    slot: 
-        {
-                type: String,
-                enum: ["forenoon", "afternoon"],
-                required: true
-        }
-    ,
+    slot: {
+        type: String,
+        enum: ["forenoon", "afternoon"],
+        required: true
+    },
     tickets: {
         type: Number,
         required: true,
@@ -54,7 +52,12 @@ const bookingSchema = new mongoose.Schema({
     paymentId: {
         type: String,
         required: true
-    },}, {
+    },
+    bookingDate: {
+        type: Date,
+        required: true,
+    }
+}, {
     timestamps: true
 });
 
