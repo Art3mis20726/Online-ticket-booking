@@ -156,6 +156,17 @@ const bookingDetails=asyncHandler(async(req,res)=>{
     return res.status(200).json(new ApiResponse(200,bookingDetails,"BookingDetails fetched successfully"))
 
 })
+const getWebnAPP=asyncHandler(async(req,res)=>{
+    const {userId}=req.params;
+    if(!userId){
+        throw new ApiError(400,"User Id is required")
+    }
+    const user=await User.findById(userId).select("-password")
+    if(!user){
+        throw new ApiError(400,"User not found")
+    }
+    return res.status(200).json(new ApiResponse(200,user.email,"succcessfull"))
+})
 export{
-    registerUser,loginUser,logoutUser,museumVisited,bookingDetails
+    registerUser,loginUser,logoutUser,museumVisited,bookingDetails,getWebnAPP
 }
